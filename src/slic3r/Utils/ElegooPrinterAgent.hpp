@@ -36,7 +36,7 @@ public:
 
     // Communication
     int send_message(std::string dev_id, std::string json_str, int qos, int flag) override { return 0; }
-    int connect_printer(std::string dev_id, std::string dev_ip, std::string username, std::string password, bool use_ssl) override;
+    int connect_printer(const PrinterConnectionParams& params) override;
     int disconnect_printer() override;
     int send_message_to_printer(std::string dev_id, std::string json_str, int qos, int flag) override { return 0; }
 
@@ -79,7 +79,7 @@ public:
 
     // Filament Operations
     FilamentSyncMode get_filament_sync_mode() const override { return FilamentSyncMode::pull; }
-    bool fetch_filament_info(std::string dev_id) override;
+    bool fetch_filament_info(std::string dev_id, FilamentSyncMode sync_mode = FilamentSyncMode::pull) override;
 
 private:
     // Extract bare IP/hostname from dev_ip (strips scheme, port, path)
