@@ -34,25 +34,24 @@ AgentInfo ElegooPrinterAgent::get_agent_info_static()
 // Connection
 // ============================================================================
 
-int ElegooPrinterAgent::connect_printer(std::string dev_id, std::string dev_ip,
-                                         std::string username, std::string password, bool use_ssl)
+int ElegooPrinterAgent::connect_printer(const PrinterConnectionParams& params)
 {
-    if (dev_id.empty() || dev_ip.empty()) {
-        BOOST_LOG_TRIVIAL(error) << "ElegooPrinterAgent::connect_printer: missing dev_id or dev_ip";
+    if (params.dev_id.empty() || params.host.empty()) {
+        BOOST_LOG_TRIVIAL(error) << "ElegooPrinterAgent::connect_printer: missing dev_id or host";
         return BAMBU_NETWORK_ERR_INVALID_HANDLE;
     }
 
-    std::string host = extract_host(dev_ip);
+    std::string host = extract_host(params.host);
     if (host.empty()) {
-        BOOST_LOG_TRIVIAL(error) << "ElegooPrinterAgent::connect_printer: could not extract host from '" << dev_ip << "'";
+        BOOST_LOG_TRIVIAL(error) << "ElegooPrinterAgent::connect_printer: could not extract host from '" << params.host << "'";
         return BAMBU_NETWORK_ERR_INVALID_HANDLE;
     }
 
     // Store connection info
     {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
-        m_dev_id = dev_id;
-        m_dev_ip = dev_ip;
+        m_dev_id = params.dev_id;
+        m_dev_ip = params.host;
 
         auto* preset_bundle = GUI::wxGetApp().preset_bundle;
         if (preset_bundle) {
@@ -62,8 +61,8 @@ int ElegooPrinterAgent::connect_printer(std::string dev_id, std::string dev_ip,
     }
 
     // Notify UI — actual connectivity is verified on first fetch_filament_info call
-    dispatch_local_connect(ConnectStatusOk, dev_id, "0");
-    dispatch_printer_connected(dev_id);
+    dispatch_local_connect(ConnectStatusOk, params.dev_id, "0");
+    dispatch_printer_connected(params.dev_id);
 
     BOOST_LOG_TRIVIAL(info) << "ElegooPrinterAgent::connect_printer: registered " << host;
     return BAMBU_NETWORK_SUCCESS;
@@ -81,7 +80,7 @@ int ElegooPrinterAgent::disconnect_printer()
 // Filament Sync
 // ============================================================================
 
-bool ElegooPrinterAgent::fetch_filament_info(std::string dev_id)
+bool ElegooPrinterAgent::fetch_filament_info(std::string dev_id, FilamentSyncMode sync_mode)
 {
     std::string host;
     std::string model_id;
