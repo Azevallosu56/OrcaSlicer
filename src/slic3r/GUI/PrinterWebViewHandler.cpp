@@ -8,6 +8,7 @@
 #include "slic3r/GUI/DeviceCore/DevManager.h"
 #include "slic3r/GUI/Widgets/WebView.hpp"
 #include "slic3r/Utils/PrintHost.hpp"
+#include "slic3r/Utils/NetworkAgent.hpp"
 #include "libslic3r/Preset.hpp"
 
 #include <memory>
