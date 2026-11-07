@@ -1,0 +1,17 @@
+name: Build Linux AppImage (v2.5.0 Centauri Canvas)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v2.5.0-elegoo-canvas
+
+jobs:
+  build_linux:
+    name: Build Linux x86_64
+    uses: ./.github/workflows/build_check_cache.yml
+    with:
+      os: ubuntu-24.04
+      arch: ""
+      build-deps-only: false
+    secrets: inherit
