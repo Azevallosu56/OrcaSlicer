@@ -1,10 +1,16 @@
-name: Build Linux AppImage (v2.5.0 Centauri Canvas)
+name: Build Linux AppImage (v2.5.1 Centauri + Qidi)
 
 on:
   workflow_dispatch:
   push:
     branches:
       - v2.5.0-elegoo-canvas
+      - v2.5.0-elegoo-qidi
+      - v2.5.1-elegoo-qidi
+
+permissions:
+  actions: write
+  contents: read
 
 jobs:
   build_linux:
@@ -15,3 +21,12 @@ jobs:
       arch: ""
       build-deps-only: false
     secrets: inherit
+
+  unit_tests_linux_x86_64:
+    name: Unit Tests Linux x86_64
+    needs: build_linux
+    if: ${{ !cancelled() && success() }}
+    uses: ./.github/workflows/unit_tests.yml
+    with:
+      os: ubuntu-24.04
+      artifact: ${{ github.sha }}-tests-linux-x86_64

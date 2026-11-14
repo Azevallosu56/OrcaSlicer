@@ -95,6 +95,7 @@ public:
 
     DevStorage::SdcardState sdcard_state = DevStorage::SdcardState::NO_SDCARD;        
     bool        task_ext_change_assist { false };
+    bool        task_enable_polar_cooler { false };
 
     int         auto_bed_leveling{0};
     int         auto_flow_cali{0};
