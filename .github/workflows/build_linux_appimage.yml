@@ -7,6 +7,10 @@ on:
       - v2.5.0-elegoo-canvas
       - v2.5.0-elegoo-qidi
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   build_linux:
     name: Build Linux x86_64
