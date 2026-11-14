@@ -6,6 +6,7 @@
 #include "libslic3r/Preset.hpp"
 #include "libslic3r/PresetBundle.hpp"
 #include "libslic3r/Utils.hpp"
+#include "slic3r/GUI/DeviceCore/DevManager.h"
 #include "slic3r/GUI/DeviceManager.hpp"
 #include "slic3r/GUI/GUI_App.hpp"
 
@@ -279,7 +280,7 @@ int QidiPrinterAgent::command_ams_refresh_rfid(std::string dev_id, int ams_id, i
 {
     const int global_slot = ams_id * 4 + slot_id;
     if (global_slot < 0 || global_slot >= 16)
-        return BAMBU_NETWORK_ERR_INVALID_PARAM;
+        return BAMBU_NETWORK_ERR_INVALID_HANDLE;
     send_gcode_async(dev_id, "READ_RFID SLOT=" + std::to_string(global_slot));
     return BAMBU_NETWORK_SUCCESS;
 }
@@ -806,7 +807,7 @@ bool QidiPrinterAgent::fetch_filament_info(std::string /*dev_id*/, FilamentSyncM
                     if (!vt_tray_json.is_null() && !vt_tray_json.empty())
                         wrapper["print"]["vt_tray"] = std::move(vt_tray_json);
                     if (wrapper.contains("print"))
-                        obj->parse_json(wrapper);
+                        obj->parse_json("lan", wrapper.dump());
                 }
             }
         }
@@ -902,7 +903,7 @@ bool QidiPrinterAgent::set_timelapse_enabled(bool enabled) const
         http.header("X-Api-Key", device_info.api_key);
     }
     http.header("Content-Type", "application/json")
-        .set_post_body("{}")
+        .set_post_body(std::string("{}"))
         .timeout_connect(4)
         .timeout_max(8)
         .on_complete([&](std::string /*body*/, unsigned status) { ok = (status >= 200 && status < 300); })
