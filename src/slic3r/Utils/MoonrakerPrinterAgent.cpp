@@ -1870,6 +1870,9 @@ void MoonrakerPrinterAgent::run_status_stream(std::string dev_id, std::string ba
                         }
                     }
                 }
+                for (const auto& extra : extra_subscription_objects(this->available_objects)) {
+                    subscribe_objects.insert(extra);
+                }
             } else {
                 subscribe_objects.insert("extruder");
                 subscribe_objects.insert("heater_bed");
@@ -2000,9 +2003,12 @@ void MoonrakerPrinterAgent::handle_ws_message(const std::string& dev_id, const s
         const std::string method = json["method"].get<std::string>();
         if (method == "notify_status_update" && json.contains("params") && json["params"].is_array() && !json["params"].empty() &&
             json["params"][0].is_object()) {
-            update_status_cache(json["params"][0]);
+            const auto& delta = json["params"][0];
+            update_status_cache(delta);
             updated = true;
-            // Note: is_critical stays false for regular status updates (telemetry)
+            if (delta.contains("multi_color_controller") || delta.contains("save_variables")) {
+                is_critical = true;
+            }
         } else if (method == "notify_klippy_ready") {
             nlohmann::json updates;
             updates["print_stats"]["state"] = "standby";
@@ -2278,11 +2284,25 @@ nlohmann::json MoonrakerPrinterAgent::build_print_payload_locked() const
         }
     }
 
+    augment_print_payload_locked(status_cache, available_objects, payload["print"]);
+
     const auto now_ms = static_cast<uint64_t>(
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count());
     payload["t_utc"] = now_ms;
 
     return payload;
+}
+
+std::set<std::string> MoonrakerPrinterAgent::get_available_objects_snapshot() const
+{
+    std::lock_guard<std::recursive_mutex> lock(payload_mutex);
+    return available_objects;
+}
+
+nlohmann::json MoonrakerPrinterAgent::get_status_cache_snapshot() const
+{
+    std::lock_guard<std::recursive_mutex> lock(payload_mutex);
+    return status_cache;
 }
 
 void MoonrakerPrinterAgent::dispatch_message(const std::string& dev_id, const std::string& payload)

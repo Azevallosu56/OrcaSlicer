@@ -36,6 +36,7 @@
 #include "libslic3r/MultiNozzleUtils.hpp" // filament-change-gap model for the best-position popup
 #include "BackgroundSlicingProcess.hpp"   // complete type for background_process().get_current_gcode_result()
 #include "DeviceCore/DevStorage.h"
+#include "slic3r/Utils/IPrinterAgent.hpp"
 
 #include <wx/event.h>
 #include <string>
@@ -719,14 +720,32 @@ SelectMachineDialog::SelectMachineDialog(Plater *plater)
         ops_no_auto, "pa_value"
     );
 
+    auto option_enable_multi_box = new PrintOption(
+        m_options_other,
+        _L("Enable Box"),
+        _L("Activate the multi-color box for multi-color printing with multiple filaments."),
+        ops_no_auto, "enable_multi_box"
+    );
+
+    auto option_enable_polar_cooler = new PrintOption(
+        m_options_other,
+        _L("Enable Polar Cooler"),
+        _L("When enabled, this function helps reduce the internal temperature of the extruder, preventing filament softening or clogging inside the extruder and improving printing stability."),
+        ops_no_auto, "enable_polar_cooler"
+    );
+
     m_sizer_options = new wxGridSizer(0, 2, FromDIP(5), FromDIP(10));
     m_sizer_options->Add(option_timelapse, 0, wxEXPAND);
     m_sizer_options->Add(option_auto_bed_level, 0, wxEXPAND);
+    m_sizer_options->Add(option_enable_multi_box, 0, wxEXPAND);
+    m_sizer_options->Add(option_enable_polar_cooler, 0, wxEXPAND);
     m_sizer_options->Add(option_flow_dynamics_cali, 0, wxEXPAND);
     m_sizer_options->Add(option_nozzle_offset_cali_cali, 0, wxEXPAND);
 
     m_checkbox_list_order.push_back(option_timelapse);
     m_checkbox_list_order.push_back(option_auto_bed_level);
+    m_checkbox_list_order.push_back(option_enable_multi_box);
+    m_checkbox_list_order.push_back(option_enable_polar_cooler);
     m_checkbox_list_order.push_back(option_flow_dynamics_cali);
     m_checkbox_list_order.push_back(option_nozzle_offset_cali_cali);
     m_checkbox_list_order.push_back(option_pa_value);
@@ -737,6 +756,8 @@ SelectMachineDialog::SelectMachineDialog(Plater *plater)
 
     m_checkbox_list["timelapse"]     = option_timelapse;
     m_checkbox_list["bed_leveling"]  = option_auto_bed_level;
+    m_checkbox_list["enable_multi_box"] = option_enable_multi_box;
+    m_checkbox_list["enable_polar_cooler"] = option_enable_polar_cooler;
     m_checkbox_list["flow_cali"]     = option_flow_dynamics_cali;
     m_checkbox_list["nozzle_offset_cali"] = option_nozzle_offset_cali_cali;
     m_checkbox_list["pa_value"]      = option_pa_value;
@@ -746,10 +767,20 @@ SelectMachineDialog::SelectMachineDialog(Plater *plater)
             // Flow calibration feeds the printer-side rack nozzle mapping; re-request it on change.
             if (print_opt == m_checkbox_list["flow_cali"]) on_flow_cali_option_changed();
             else if (print_opt == m_checkbox_list["pa_value"]) on_pa_value_option_changed();
+            else if (print_opt == m_checkbox_list["enable_multi_box"]) {
+                if (DeviceManager* dev = Slic3r::GUI::wxGetApp().getDeviceManager()) {
+                    if (MachineObject* cur_obj = dev->get_selected_machine()) {
+                        do_ams_mapping(cur_obj, print_opt->getValue() == "on");
+                        update_filament_change_count();
+                    }
+                }
+            }
         });
     }
 
     option_auto_bed_level->Hide();
+    option_enable_multi_box->Hide();
+    option_enable_polar_cooler->Hide();
     option_flow_dynamics_cali->Hide();
     option_nozzle_offset_cali_cali->Hide();
     option_pa_value->Hide();
@@ -3163,6 +3194,12 @@ void SelectMachineDialog::update_option_opts(MachineObject *obj)
     }
     m_checkbox_list["flow_cali"]->Show(obj->is_support_pa_calibration);
 
+    const auto* active_agent  = wxGetApp().getAgent();
+    const auto  printer_agent = active_agent ? active_agent->get_printer_agent() : nullptr;
+    const bool  is_qidi_agent = printer_agent && printer_agent->get_agent_info().id == "qidi";
+    m_checkbox_list["enable_multi_box"]->Show(is_qidi_agent && obj->HasAms());
+    m_checkbox_list["enable_polar_cooler"]->Show(obj->is_support_polar_cooler);
+
     update_options_layout();
 }
 
@@ -3776,7 +3813,10 @@ void SelectMachineDialog::on_send_print()
         bool has_ext = _HasExt(m_ams_mapping_result);
         bool has_ams = _HasAms(m_ams_mapping_result);
 
-        if (has_ams && !has_ext) {
+        if (m_checkbox_list["enable_multi_box"]->IsShown() && m_checkbox_list["enable_multi_box"]->getValue() == "off") {
+            m_print_job->task_use_ams = false;
+        }
+        else if (has_ams && !has_ext) {
             m_print_job->task_use_ams = true;
         }
         else if (has_ext && !has_ams) {
@@ -3788,6 +3828,9 @@ void SelectMachineDialog::on_send_print()
     } else {
         m_print_job->task_use_ams = false;
     }
+
+    m_print_job->task_enable_polar_cooler =
+        m_checkbox_list["enable_polar_cooler"]->IsShown() && (m_checkbox_list["enable_polar_cooler"]->getValue() == "on");
 
     BOOST_LOG_TRIVIAL(info) << "print_job: timelapse_option = " << timelapse_option;
     BOOST_LOG_TRIVIAL(info) << "print_job: use_ams = " << m_print_job->task_use_ams;
@@ -4852,7 +4895,9 @@ void SelectMachineDialog::update_show_status(MachineObject* obj_)
 
     /*do ams mapping if no ams result*/
     if (m_ams_mapping_result.empty()) {
-        do_ams_mapping(obj_, true);
+        const bool want_ams = !m_checkbox_list["enable_multi_box"]->IsShown() ||
+                              (m_checkbox_list["enable_multi_box"]->getValue() == "on");
+        do_ams_mapping(obj_, want_ams);
         update_filament_change_count();
     }
 

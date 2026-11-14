@@ -3262,6 +3262,15 @@ int MachineObject::parse_json(std::string tunnel, std::string payload, bool key_
                         is_support_filament_backup = jj["support_filament_backup"].get<bool>();
                     }
                 }
+                if (jj.contains("support_polar_cooler") && jj["support_polar_cooler"].is_boolean()) {
+                    is_support_polar_cooler = jj["support_polar_cooler"].get<bool>();
+                }
+                if (jj.contains("support_timelapse") && jj["support_timelapse"].is_boolean()) {
+                    is_support_timelapse = jj["support_timelapse"].get<bool>();
+                }
+                if (jj.contains("support_ams_humidity") && jj["support_ams_humidity"].is_boolean()) {
+                    is_support_ams_humidity = jj["support_ams_humidity"].get<bool>();
+                }
 
                 if (jj.contains("support_update_remain")) {
                     if (jj["support_update_remain"].is_boolean()) {
