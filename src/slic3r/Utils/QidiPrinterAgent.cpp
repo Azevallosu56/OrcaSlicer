@@ -36,45 +36,54 @@ namespace {
 
 struct QidiFilamentCatalog
 {
-    std::unordered_map<std::string, QidiFilamentEntry> by_orca_id;
-    std::unordered_map<std::string, QidiFilamentEntry> by_qidi_id;
+    std::string                                         loaded_path;
+    std::unordered_map<std::string, QidiFilamentEntry>  by_orca_id;
+    std::unordered_map<std::string, QidiFilamentEntry>  by_qidi_id;
 };
 
-const QidiFilamentCatalog& qidi_filament_catalog()
+QidiFilamentCatalog load_qidi_filament_catalog()
 {
     static QidiFilamentCatalog catalog;
-    static std::once_flag      once;
-    std::call_once(once, []() {
-        const std::string path = resources_dir() + "/printers/qidi_filament_ids.json";
-        boost::nowide::ifstream file(path);
-        if (!file.is_open()) {
-            BOOST_LOG_TRIVIAL(warning) << "QidiPrinterAgent: could not open " << path;
-            return;
+    static std::mutex          mutex;
+    std::lock_guard<std::mutex> lock(mutex);
+
+    const std::string path = resources_dir() + "/printers/qidi_filament_ids.json";
+    if (catalog.loaded_path == path && !catalog.by_orca_id.empty()) {
+        return catalog;
+    }
+
+    boost::nowide::ifstream file(path);
+    if (!file.is_open()) {
+        BOOST_LOG_TRIVIAL(warning) << "QidiPrinterAgent: could not open " << path;
+        return catalog;
+    }
+    const auto root = nlohmann::json::parse(file, nullptr, false);
+    if (root.is_discarded() || !root.contains("filaments") || !root["filaments"].is_object()) {
+        BOOST_LOG_TRIVIAL(warning) << "QidiPrinterAgent: invalid JSON in " << path;
+        return catalog;
+    }
+
+    QidiFilamentCatalog loaded;
+    loaded.loaded_path = path;
+    for (const auto& [orca_id, item] : root["filaments"].items()) {
+        if (!item.is_object())
+            continue;
+        QidiFilamentEntry entry;
+        entry.orca_id           = orca_id;
+        entry.qidi_id           = item.value("qidi_id", std::string{});
+        entry.name              = item.value("name", std::string{});
+        entry.type              = item.value("type", std::string{});
+        entry.vendor            = item.value("vendor", std::string{});
+        entry.firmware_vendor   = item.value("firmware_vendor", std::string{"Generic"});
+        entry.firmware_filament = item.value("firmware_filament", entry.type);
+        entry.nozzle_temp_min   = item.value("nozzle_temp_min", 190);
+        entry.nozzle_temp_max   = item.value("nozzle_temp_max", 240);
+        loaded.by_orca_id.emplace(entry.orca_id, entry);
+        if (!entry.qidi_id.empty()) {
+            loaded.by_qidi_id.emplace(entry.qidi_id, entry);
         }
-        const auto root = nlohmann::json::parse(file, nullptr, false);
-        if (root.is_discarded() || !root.contains("filaments") || !root["filaments"].is_object()) {
-            BOOST_LOG_TRIVIAL(warning) << "QidiPrinterAgent: invalid JSON in " << path;
-            return;
-        }
-        for (const auto& [orca_id, item] : root["filaments"].items()) {
-            if (!item.is_object())
-                continue;
-            QidiFilamentEntry entry;
-            entry.orca_id           = orca_id;
-            entry.qidi_id           = item.value("qidi_id", std::string{});
-            entry.name              = item.value("name", std::string{});
-            entry.type              = item.value("type", std::string{});
-            entry.vendor            = item.value("vendor", std::string{});
-            entry.firmware_vendor   = item.value("firmware_vendor", std::string{"Generic"});
-            entry.firmware_filament = item.value("firmware_filament", entry.type);
-            entry.nozzle_temp_min   = item.value("nozzle_temp_min", 190);
-            entry.nozzle_temp_max   = item.value("nozzle_temp_max", 240);
-            catalog.by_orca_id.emplace(entry.orca_id, entry);
-            if (!entry.qidi_id.empty()) {
-                catalog.by_qidi_id.emplace(entry.qidi_id, entry);
-            }
-        }
-    });
+    }
+    catalog = std::move(loaded);
     return catalog;
 }
 
@@ -203,7 +212,7 @@ std::string QidiPrinterAgent::translate_qidi_to_orca_id(const std::string& qidi_
 {
     if (qidi_id.empty())
         return {};
-    const auto& cat = qidi_filament_catalog();
+    const auto cat = load_qidi_filament_catalog();
     if (cat.by_orca_id.find(qidi_id) != cat.by_orca_id.end())
         return qidi_id;
     const auto it = cat.by_qidi_id.find(qidi_id);
@@ -216,7 +225,7 @@ std::string QidiPrinterAgent::translate_orca_to_qidi_id(const std::string& orca_
 {
     if (orca_id.empty())
         return {};
-    const auto& cat = qidi_filament_catalog();
+    const auto cat = load_qidi_filament_catalog();
     if (cat.by_qidi_id.find(orca_id) != cat.by_qidi_id.end())
         return orca_id;
     const auto it = cat.by_orca_id.find(orca_id);
@@ -227,8 +236,8 @@ std::string QidiPrinterAgent::translate_orca_to_qidi_id(const std::string& orca_
 
 bool QidiPrinterAgent::lookup_filament_by_orca_id(const std::string& orca_id, QidiFilamentEntry& out_entry)
 {
-    const auto& cat = qidi_filament_catalog();
-    const auto  it  = cat.by_orca_id.find(orca_id);
+    const auto cat = load_qidi_filament_catalog();
+    const auto it  = cat.by_orca_id.find(orca_id);
     if (it == cat.by_orca_id.end())
         return false;
     out_entry = it->second;
@@ -237,8 +246,8 @@ bool QidiPrinterAgent::lookup_filament_by_orca_id(const std::string& orca_id, Qi
 
 bool QidiPrinterAgent::lookup_filament_by_qidi_id(const std::string& qidi_id, QidiFilamentEntry& out_entry)
 {
-    const auto& cat = qidi_filament_catalog();
-    const auto  it  = cat.by_qidi_id.find(qidi_id);
+    const auto cat = load_qidi_filament_catalog();
+    const auto it  = cat.by_qidi_id.find(qidi_id);
     if (it == cat.by_qidi_id.end())
         return false;
     out_entry = it->second;

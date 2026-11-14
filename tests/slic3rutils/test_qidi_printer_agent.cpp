@@ -5,12 +5,29 @@
 #include <set>
 #include <string>
 
+#include <boost/filesystem.hpp>
 #include <nlohmann/json.hpp>
 
+#include "libslic3r/Utils.hpp"
 #include "slic3r/Utils/QidiPrinterAgent.hpp"
 #include "slic3r/Utils/bambu_networking.hpp"
 
 using namespace Slic3r;
+
+namespace {
+
+struct ScopedRepoResourcesDir
+{
+    std::string previous{resources_dir()};
+
+    ScopedRepoResourcesDir() { set_resources_dir(boost::filesystem::path(PROFILES_DIR).parent_path().string()); }
+    ~ScopedRepoResourcesDir() { set_resources_dir(previous); }
+
+    ScopedRepoResourcesDir(const ScopedRepoResourcesDir&)            = delete;
+    ScopedRepoResourcesDir& operator=(const ScopedRepoResourcesDir&) = delete;
+};
+
+} // namespace
 
 TEST_CASE("A filament mapped to a Box slot saves that slot in its tool variable", "[QidiPrinterAgent]")
 {
@@ -63,6 +80,7 @@ TEST_CASE("The print start of a 3MF names the plate to print", "[QidiPrinterAgen
 
 TEST_CASE("Qidi filament catalog translates QF codes to Orca OF IDs and firmware strings", "[QidiPrinterAgent]")
 {
+    const ScopedRepoResourcesDir repo_resources;
     CHECK(QidiPrinterAgent::translate_qidi_to_orca_id("QFA90") == "OFDSrzZ8");
     CHECK(QidiPrinterAgent::translate_qidi_to_orca_id("OFDSrzZ8") == "OFDSrzZ8");
     CHECK(QidiPrinterAgent::translate_orca_to_qidi_id("OF4nQ62r") == "QFA00");
@@ -110,6 +128,7 @@ TEST_CASE("Pre-print script configures Qidi Box, G31/G32 leveling, and Polar Coo
 
 TEST_CASE("Qidi Max 4 Moonraker status populates drying Box slots and slot16 External Spool", "[QidiPrinterAgent]")
 {
+    const ScopedRepoResourcesDir repo_resources;
     const auto status = nlohmann::json::parse(R"({
         "multi_color_controller": {
             "box_count": 1,
