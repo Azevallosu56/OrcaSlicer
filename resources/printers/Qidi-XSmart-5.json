@@ -1,0 +1,51 @@
+{
+  "00.00.00.00": {
+    "display_name": "Qidi X-Smart 5",
+    "print": {
+      "nozzle_temp_range": [
+        0,
+        315
+      ],
+      "bed_temp_range": [
+        0,
+        85
+      ],
+      "support_command_ams_switch": true,
+      "support_cloud_print_only": false,
+      "support_1080dpi": true,
+      "support_prompt_sound": false,
+      "support_ams_humidity": true,
+      "support_auto_recovery_step_loss": false,
+      "support_bed_leveling": 1,
+      "support_update_remain": false,
+      "support_timelapse": true,
+      "support_filament_backup": true,
+      "support_chamber_fan": false,
+      "support_aux_fan": false,
+      "support_send_to_sd": true,
+      "support_print_all": false,
+      "support_print_without_sd": true,
+      "support_nozzle_offset_calibration": false,
+      "support_high_tempbed_calibration": true,
+      "support_ai_monitoring": false,
+      "support_save_remote_print_file_to_storage": true,
+      "support_chamber": false,
+      "support_chamber_temp_edit": false,
+      "support_chamber_temp_edit_range": [
+        0,
+        65
+      ],
+      "support_user_preset": false,
+      "support_ams_ext_mix_print": true
+    },
+    "model_id": "Qidi-XSmart-5",
+    "support_wrapping_detection": false,
+    "compatible_machine": [],
+    "printer_type": "Qidi-XSmart-5",
+    "use_ams_type": "generic",
+    "printer_arch": "core_xy",
+    "printer_series": "series_s5",
+    "has_cali_line": true,
+    "printer_is_enclosed": true
+  }
+}

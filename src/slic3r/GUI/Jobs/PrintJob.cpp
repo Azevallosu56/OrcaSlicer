@@ -13,6 +13,7 @@
 
 #include "slic3r/Utils/FileTransferUtils.hpp"
 #include "slic3r/Utils/BBLNetworkPlugin.hpp"
+#include "slic3r/Utils/IPrinterAgent.hpp"
 #include "NetworkAgent.hpp"
 #include <string>
 #include "libslic3r/Utils.hpp"
@@ -244,8 +245,11 @@ void PrintJob::process(Ctl &ctl)
     params.username = m_agent->default_lan_username();
     params.password = m_access_code;
 
-    // check access code and ip address
-    if (this->connection_type == "lan" && m_print_type == "from_normal") {
+    // check access code and ip address (Bambu FTP/eMMC pre-flight; non-Bambu agents validate during upload)
+    const auto printer_agent  = m_agent ? m_agent->get_printer_agent() : nullptr;
+    const std::string agent_id = printer_agent ? printer_agent->get_agent_info().id : std::string{};
+    const bool is_bambu_agent = (agent_id == "bambu");
+    if (is_bambu_agent && this->connection_type == "lan" && m_print_type == "from_normal") {
         bool emmc_ok = false;
         bool ftp_ok = false;
         if (could_emmc_print) {
@@ -314,6 +318,9 @@ void PrintJob::process(Ctl &ctl)
     params.auto_offset_cali     = this->auto_offset_cali;
     params.extruder_cali_manual_mode = this->extruder_cali_manual_mode;
     params.task_ext_change_assist = this->task_ext_change_assist;
+    if (agent_id == "qidi") {
+        params.extra_options = nlohmann::json{{"enable_polar_cooler", this->task_enable_polar_cooler}}.dump();
+    }
     // Allow disabling the eMMC print path via AppConfig. Plugin 02.03.00.62's
     // eMMC tunnel code hangs indefinitely at the upload phase with some
     // printers (e.g., Bambu H2D), so we default to disabled. Users with

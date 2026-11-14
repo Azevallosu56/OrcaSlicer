@@ -1,0 +1,565 @@
+{
+  "qidistudio_commit": "21d4745",
+  "filaments": {
+    "OF1dpPrW": {
+      "qidi_id": "QFL30",
+      "name": "Bambu PLA",
+      "type": "PLA",
+      "vendor": "Bambu Lab",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OF2TQpOO": {
+      "qidi_id": "QFA05",
+      "name": "QIDI PLA Silk",
+      "type": "PLA",
+      "vendor": "QIDI",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA Silk",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OF3IKafc": {
+      "qidi_id": "QFA03",
+      "name": "QIDI PLA Rapido Matte",
+      "type": "PLA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA Matte",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OF4S3To3": {
+      "qidi_id": "QFG02",
+      "name": "QIDI PETG Rapido",
+      "type": "PETG",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PETG Rapido",
+      "nozzle_temp_min": 220,
+      "nozzle_temp_max": 270
+    },
+    "OF4iWKrE": {
+      "qidi_id": "QFG50",
+      "name": "QIDI PETG-CF",
+      "type": "PETG-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PETG-CF",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 270
+    },
+    "OF4nQ62r": {
+      "qidi_id": "QFA00",
+      "name": "QIDI PLA Basic",
+      "type": "PLA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA Basic",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OF5CgdDq": {
+      "qidi_id": "QFL20",
+      "name": "PolyLite PLA",
+      "type": "PLA",
+      "vendor": "Polymaker",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OF9EHUKK": {
+      "qidi_id": "QFU02",
+      "name": "QIDI TPU-GF",
+      "type": "TPU-GF",
+      "vendor": "QIDI",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "TPU-GF",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 270
+    },
+    "OF9PELEb": {
+      "qidi_id": "QFN21",
+      "name": "QIDI UltraPA-CF25",
+      "type": "UltraPA-CF25",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "UltraPA-CF25",
+      "nozzle_temp_min": 300,
+      "nozzle_temp_max": 320
+    },
+    "OFANFm4x": {
+      "qidi_id": "QFA04",
+      "name": "QIDI PLA Rapido Metal",
+      "type": "PLA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA Metal",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFDIrhbu": {
+      "qidi_id": "QFC02",
+      "name": "QIDI PC/ABS-FR",
+      "type": "PC-ABS-FR",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PC/ABS-FR",
+      "nozzle_temp_min": 260,
+      "nozzle_temp_max": 280
+    },
+    "OFDSrzZ8": {
+      "qidi_id": "QFA90",
+      "name": "Generic PLA",
+      "type": "PLA",
+      "vendor": "Generic",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFEWYR89": {
+      "qidi_id": "QFA91",
+      "name": "Generic PLA+",
+      "type": "PLA",
+      "vendor": "Generic",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFIWMSGX": {
+      "qidi_id": "QFL11",
+      "name": "HATCHBOX PETG",
+      "type": "PETG",
+      "vendor": "HATCHBOX",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PETG",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFK8XHPn": {
+      "qidi_id": "QFL62",
+      "name": "Overture ABS",
+      "type": "ABS",
+      "vendor": "Overture",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "ABS",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFKIQO2W": {
+      "qidi_id": "QFA02",
+      "name": "QIDI PLA Rapido",
+      "type": "PLA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA Rapido",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFKfJTwL": {
+      "qidi_id": "QFT01",
+      "name": "QIDI PET-CF",
+      "type": "PET-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PET-CF",
+      "nozzle_temp_min": 280,
+      "nozzle_temp_max": 320
+    },
+    "OFKgmsqE": {
+      "qidi_id": "QFN04",
+      "name": "QIDI PAHT-CF",
+      "type": "PAHT-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PAHT-CF",
+      "nozzle_temp_min": 300,
+      "nozzle_temp_max": 320
+    },
+    "OFLYDngx": {
+      "qidi_id": "QFL31",
+      "name": "Bambu PETG",
+      "type": "PETG",
+      "vendor": "Bambu Lab",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PETG",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFLakOUI": {
+      "qidi_id": "QFC90",
+      "name": "Generic PC",
+      "type": "PC",
+      "vendor": "Generic",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PC",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFMDHOcT": {
+      "qidi_id": "QFU00",
+      "name": "QIDI TPU-Aero",
+      "type": "TPU-AERO",
+      "vendor": "QIDI",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "TPU-Aero",
+      "nozzle_temp_min": 200,
+      "nozzle_temp_max": 250
+    },
+    "OFOvv91M": {
+      "qidi_id": "QFL22",
+      "name": "PolyLite ABS",
+      "type": "ABS",
+      "vendor": "Polymaker",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "ABS",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFQ40XeN": {
+      "qidi_id": "QFG03",
+      "name": "QIDI PETG Tough",
+      "type": "PETG",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PETG-Tough",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 275
+    },
+    "OFR1XLMN": {
+      "qidi_id": "QFU01",
+      "name": "QIDI TPU 95A-HF",
+      "type": "TPU",
+      "vendor": "QIDI",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "TPU 95A-HF",
+      "nozzle_temp_min": 200,
+      "nozzle_temp_max": 250
+    },
+    "OFT2jon4": {
+      "qidi_id": "QFB54",
+      "name": "QIDI ABS Rapido",
+      "type": "ABS",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "ABS Rapido",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFTsHNQi": {
+      "qidi_id": "QFB01",
+      "name": "QIDI ASA",
+      "type": "ASA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "ASA",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFWDe7YH": {
+      "qidi_id": "QFN20",
+      "name": "QIDI UltraPA",
+      "type": "UltraPA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "UltraPA",
+      "nozzle_temp_min": 260,
+      "nozzle_temp_max": 300
+    },
+    "OFXn3Vd9": {
+      "qidi_id": "QFS03",
+      "name": "QIDI Support For PAHT",
+      "type": "PAHT-S",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "Support For PAHT",
+      "nozzle_temp_min": 260,
+      "nozzle_temp_max": 280
+    },
+    "OFY9muEs": {
+      "qidi_id": "QFB91",
+      "name": "Generic ABS",
+      "type": "ABS",
+      "vendor": "Generic",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "ABS",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFYPdQJh": {
+      "qidi_id": "QFG90",
+      "name": "Generic PETG",
+      "type": "PETG",
+      "vendor": "Generic",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PETG",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFZ3K2cL": {
+      "qidi_id": "QFN05",
+      "name": "QIDI PA6-CF",
+      "type": "PA6-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PA6-CF",
+      "nozzle_temp_min": 260,
+      "nozzle_temp_max": 300
+    },
+    "OFZOuWrO": {
+      "qidi_id": "QFP01",
+      "name": "QIDI PPS-CF",
+      "type": "PPS-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PPS-CF",
+      "nozzle_temp_min": 300,
+      "nozzle_temp_max": 350
+    },
+    "OFc3xdm9": {
+      "qidi_id": "QFL60",
+      "name": "Overture PLA",
+      "type": "PLA",
+      "vendor": "Overture",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFdtPd9h": {
+      "qidi_id": "QFG51",
+      "name": "QIDI PETG-GF",
+      "type": "PETG-GF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PETG-GF",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 270
+    },
+    "OFeCJqxx": {
+      "qidi_id": "QFB55",
+      "name": "QIDI ABS Rapido Metal",
+      "type": "ABS",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "ABS-Metal",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFeelsSM": {
+      "qidi_id": "QFL10",
+      "name": "HATCHBOX PLA",
+      "type": "PLA",
+      "vendor": "HATCHBOX",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFesA6rF": {
+      "qidi_id": "QFA92",
+      "name": "Generic PLA Silk",
+      "type": "PLA",
+      "vendor": "Generic",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFf0MkD5": {
+      "qidi_id": "QFG04",
+      "name": "QIDI PETG Translucent",
+      "type": "PETG",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PETG Translucent",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFfYHK5z": {
+      "qidi_id": "QFL24",
+      "name": "Polymaker PLA-HT",
+      "type": "PLA",
+      "vendor": "Polymaker",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "PLA",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFhWrAuP": {
+      "qidi_id": "QFA50",
+      "name": "QIDI PLA-CF",
+      "type": "PLA-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA-CF",
+      "nozzle_temp_min": 210,
+      "nozzle_temp_max": 250
+    },
+    "OFhiJE7Y": {
+      "qidi_id": "QFU03",
+      "name": "QIDI PEBA 95A",
+      "type": "PEBA",
+      "vendor": "QIDI",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PEBA",
+      "nozzle_temp_min": 230,
+      "nozzle_temp_max": 260
+    },
+    "OFhuaUQB": {
+      "qidi_id": "QFL32",
+      "name": "Bambu ABS",
+      "type": "ABS",
+      "vendor": "Bambu Lab",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "ABS",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFhx4uOG": {
+      "qidi_id": "QFT02",
+      "name": "QIDI PET-GF",
+      "type": "PET-GF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PET-GF",
+      "nozzle_temp_min": 280,
+      "nozzle_temp_max": 320
+    },
+    "OFjiXpyf": {
+      "qidi_id": "QFU91",
+      "name": "Generic TPU 95A",
+      "type": "TPU",
+      "vendor": "Generic",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "TPU",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFma5TXH": {
+      "qidi_id": "QFB53",
+      "name": "QIDI ABS Odorless",
+      "type": "ABS",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "ABS-Odorless",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFn6WpN7": {
+      "qidi_id": "QFN12",
+      "name": "QIDI PA12-CF",
+      "type": "PA12-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PA12-CF",
+      "nozzle_temp_min": 260,
+      "nozzle_temp_max": 300
+    },
+    "OFo15hcT": {
+      "qidi_id": "QFN14",
+      "name": "QIDI PAHT-GF",
+      "type": "PAHT-GF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PAHT-GF",
+      "nozzle_temp_min": 300,
+      "nozzle_temp_max": 320
+    },
+    "OFp57RRC": {
+      "qidi_id": "QFP02",
+      "name": "QIDI PPS-GF",
+      "type": "PPS-GF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PPS-GF",
+      "nozzle_temp_min": 300,
+      "nozzle_temp_max": 350
+    },
+    "OFqcL5UF": {
+      "qidi_id": "QFS01",
+      "name": "QIDI Support For PET/PA",
+      "type": "PA-S",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "Support For PET/PA",
+      "nozzle_temp_min": 260,
+      "nozzle_temp_max": 280
+    },
+    "OFt3HtlG": {
+      "qidi_id": "QFB50",
+      "name": "QIDI ABS-GF",
+      "type": "ABS-GF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "ABS-GF",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFu1E4ur": {
+      "qidi_id": "QFB02",
+      "name": "QIDI ASA-Aero",
+      "type": "ASA-AERO",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "ASA-Aero",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFuJ49uH": {
+      "qidi_id": "QFG00",
+      "name": "QIDI PETG Basic",
+      "type": "PETG",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PETG Basic",
+      "nozzle_temp_min": 240,
+      "nozzle_temp_max": 280
+    },
+    "OFughwKn": {
+      "qidi_id": "QFA01",
+      "name": "QIDI PLA Matte Basic",
+      "type": "PLA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA Matte Basic",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 230
+    },
+    "OFvdZ2bx": {
+      "qidi_id": "QFA16",
+      "name": "QIDI WOOD Rapido",
+      "type": "PLA",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "PLA-Wood",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 220
+    },
+    "OFwLBAGf": {
+      "qidi_id": "QFL12",
+      "name": "HATCHBOX ABS",
+      "type": "ABS",
+      "vendor": "HATCHBOX",
+      "firmware_vendor": "Generic",
+      "firmware_filament": "ABS",
+      "nozzle_temp_min": 190,
+      "nozzle_temp_max": 240
+    },
+    "OFzLyxxh": {
+      "qidi_id": "QFB51",
+      "name": "QIDI ASA-CF20 Core",
+      "type": "ASA-CF",
+      "vendor": "",
+      "firmware_vendor": "QIDI",
+      "firmware_filament": "ASA-CF",
+      "nozzle_temp_min": 260,
+      "nozzle_temp_max": 280
+    }
+  }
+}

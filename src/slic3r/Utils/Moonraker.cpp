@@ -172,7 +172,7 @@ bool Moonraker::get_storage(wxArrayString &storage_path, wxArrayString &storage_
     return got_any;
 }
 
-bool Moonraker::start_print(wxString &error_msg, const std::string &filename) const
+bool Moonraker::start_print(wxString &error_msg, const std::string &filename, const std::string &plateindex) const
 {
     //ORCA: POST /printer/print/start with JSON body { "filename": "<name>.gcode" }.
     //      `filename` is the item.path /server/files/upload returned (the storage-relative
@@ -184,6 +184,9 @@ bool Moonraker::start_print(wxString &error_msg, const std::string &filename) co
     auto url = make_url("printer/print/start");
     pt::ptree body_tree;
     body_tree.put("filename", filename);
+    if (!plateindex.empty()) {
+        body_tree.put("plateindex", plateindex);
+    }
     std::ostringstream body_ss;
     pt::write_json(body_ss, body_tree, /*pretty=*/false);
     std::string body = body_ss.str();
@@ -325,7 +328,7 @@ bool Moonraker::upload(PrintHostUpload upload_data, ProgressFn progress_fn, Erro
     // printer cannot start it, the error from this request is what the user sees.
     if (want_start && !uploaded_path.empty() && !moonraker_started_print) {
         wxString start_msg;
-        if (!start_print(start_msg, uploaded_path)) {
+        if (!start_print(start_msg, uploaded_path, plateindex)) {
             error_fn(std::move(start_msg));
             return false;
         }

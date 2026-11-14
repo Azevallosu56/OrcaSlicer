@@ -135,6 +135,22 @@ protected:
     virtual bool print_uploaded_file(const PrintParams& params, const std::string& filename);
     // Whether the printer prints a .gcode.3mf bundle as is (its use_3mf option)
     virtual bool accepts_3mf() const;
+    // Subclass hooks for vendor-specific Moonraker status objects, push_status payload fields, and JSON commands
+    virtual std::vector<std::string> extra_subscription_objects(const std::set<std::string>& objects) const
+    {
+        (void) objects;
+        return {};
+    }
+    virtual void augment_print_payload_locked(const nlohmann::json& status,
+                                              const std::set<std::string>& objects,
+                                              nlohmann::json& print_payload) const
+    {
+        (void) status;
+        (void) objects;
+        (void) print_payload;
+    }
+    virtual int handle_request(const std::string& dev_id, const std::string& json_str);
+
     void start_status_stream(const std::string& dev_id, const std::string& base_url, const std::string& api_key);
     void stop_status_stream();
 
@@ -147,6 +163,10 @@ protected:
     std::string sanitize_filename(const std::string& filename);
     std::string join_url(const std::string& base_url, const std::string& path) const;
     bool send_gcode_sync(const std::string& dev_id, const std::string& gcode) const;
+    void send_gcode_async(const std::string& dev_id, const std::string& gcode,
+                          std::function<void(bool)> on_result = {}) const;
+    std::set<std::string> get_available_objects_snapshot() const;
+    nlohmann::json        get_status_cache_snapshot() const;
     // Posts the request to /printer/print/start
     bool send_jsonrpc_command(const std::string& base_url, const std::string& api_key,
                               const nlohmann::json& request, std::string& response) const;
@@ -158,7 +178,6 @@ protected:
     static std::string map_filament_type_to_generic_id(const std::string& filament_type);
 
 private:
-    int handle_request(const std::string& dev_id, const std::string& json_str);
     int send_version_info(const std::string& dev_id);
     int send_access_code(const std::string& dev_id);
 
@@ -175,8 +194,6 @@ private:
                               nlohmann::json&              status,
                               std::string&                 error,
                               const std::function<bool()>& cancelled) const;
-    void send_gcode_async(const std::string& dev_id, const std::string& gcode,
-                          std::function<void(bool)> on_result = {}) const;
 
     void announce_printhost_device();
     void dispatch_local_connect(int state, const std::string& dev_id, const std::string& msg);
