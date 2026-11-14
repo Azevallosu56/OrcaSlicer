@@ -175,12 +175,14 @@ std::string fallback_orca_id_for_type(const std::string& tray_type)
         return QidiPrinterAgent::translate_qidi_to_orca_id("QFC90");
     if (upper.find("PA") != std::string::npos || upper.find("NYLON") != std::string::npos)
         return QidiPrinterAgent::translate_qidi_to_orca_id("QFN04");
+    if (upper.find("PET-CF") != std::string::npos)
+        return QidiPrinterAgent::translate_qidi_to_orca_id("QFT01");
     if (wxTheApp != nullptr && GUI::wxGetApp().preset_bundle != nullptr) {
         const std::string id = GUI::wxGetApp().preset_bundle->filaments.filament_id_by_type(tray_type);
         if (!id.empty())
             return id;
     }
-    return MoonrakerPrinterAgent::map_filament_type_to_generic_id(tray_type);
+    return {};
 }
 
 bool has_mapped_box_slot(const PrintParams& params)
