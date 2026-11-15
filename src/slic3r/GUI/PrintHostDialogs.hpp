@@ -173,21 +173,37 @@ public:
     BedType      bedType() const { return m_BedType; }
 
     virtual void                               init() override;
-    virtual std::map<std::string, std::string> extendedInfo() const override
+    virtual std::map<std::string, std::string> extendedInfo() const override;
+
+    // Orca: per-filament tray mapping, rendered also for single-filament projects so the
+    // operator can pick the tray the print starts from. The selection travels as slotMap in
+    // the SDCP start-print command (Cmd 128); without it the firmware prints from its
+    // currently active tray regardless of what was intended.
+    struct TrayCandidate
     {
-        return {{"bedType", std::to_string(static_cast<int>(m_BedType))},
-                {"timeLapse", std::to_string(m_timeLapse)},
-                {"heatedBedLeveling", std::to_string(m_heatedBedLeveling)}};
-    }
+        int     canvas_id;
+        int     tray_id;
+        wxString label;
+        wxString hex;
+    };
+    struct MappingRow
+    {
+        int      filament_idx;
+        class wxChoice* combo;
+    };
 
 private:
     BedType appBedType() const;
     void    refresh();
 
+    std::vector<TrayCandidate> m_candidates;
+    std::vector<MappingRow>    m_mapping_rows;
+
     const char* CONFIG_KEY_UPLOADANDPRINT    = "elegoolink_upload_and_print";
     const char* CONFIG_KEY_TIMELAPSE         = "elegoolink_timelapse";
     const char* CONFIG_KEY_HEATEDBEDLEVELING = "elegoolink_heated_bed_leveling";
     const char* CONFIG_KEY_BEDTYPE           = "elegoolink_bed_type";
+    const char* CONFIG_KEY_SLOTMAP           = "elegoolink_slot_map";
 
 private:
     wxStaticText* warning_text{nullptr};

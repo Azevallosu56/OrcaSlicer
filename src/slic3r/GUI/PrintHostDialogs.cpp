@@ -25,6 +25,11 @@
 #include <memory>
 #include "slic3r/GUI/Widgets/Label.hpp"
 #include "slic3r/GUI/GUI_Utils.hpp"
+#include "slic3r/GUI/DeviceManager.hpp"
+#include "slic3r/GUI/DeviceCore/DevManager.h"
+#include "slic3r/GUI/DeviceCore/DevFilaSystem.h"
+#include "slic3r/GUI/GuiColor.hpp"
+#include <wx/choice.h>
 #include <vector>
 #include <utility>
 #include <wx/arrstr.h>
@@ -1828,6 +1833,103 @@ void ElegooPrintHostSendDialog::init() {
 
     uploadandprint_sizer->Layout();
 
+    // Orca: per-filament tray mapping, also for single-filament projects. Without a row the
+    // operator has no way to name the starting tray, and the firmware keeps feeding from its
+    // active tray. The combos feed slotMap in the SDCP start-print command.
+    {
+        DeviceManager* dev = wxGetApp().getDeviceManager();
+        MachineObject* obj = dev ? dev->get_selected_machine() : nullptr;
+        if (obj != nullptr && obj->HasAms()) {
+            const auto& project_config   = wxGetApp().preset_bundle->project_config;
+            const auto& filament_presets = wxGetApp().preset_bundle->filament_presets;
+            const auto  filament_colours = project_config.option<ConfigOptionStrings>("filament_colour")->values;
+            const auto  filament_map     = wxGetApp().plater()->get_partplate_list().get_curr_plate()->get_real_filament_maps(project_config);
+
+            for (const auto& ams : obj->GetFilaSystem()->GetAmsList()) {
+                const int canvas_id = atoi(ams.first.c_str());
+                for (const auto& tray : ams.second->GetTrays()) {
+                    if (!tray.second->is_exists)
+                        continue;
+                    TrayCandidate cand;
+                    cand.canvas_id = canvas_id;
+                    cand.tray_id   = atoi(tray.first.c_str());
+                    cand.label     = wxString::Format("Slot %d - %s", cand.tray_id + 1, from_u8(tray.second->get_display_filament_type()));
+                    cand.hex       = wxString::Format("#%s", from_u8(tray.second->color));
+                    m_candidates.push_back(cand);
+                }
+            }
+
+            if (!m_candidates.empty()) {
+                const nlohmann::json saved = nlohmann::json::parse(from_u8(app_config->get("recent", CONFIG_KEY_SLOTMAP)), nullptr, false);
+
+                auto* label_map = new wxStaticText(this, wxID_ANY, _L("Filament mapping (starting tray)"));
+                label_map->SetFont(::Label::Body_13);
+                auto* map_sizer = new wxBoxSizer(wxVERTICAL);
+                map_sizer->Add(label_map);
+                map_sizer->AddSpacer(VERT_SPACING / 2);
+
+                for (size_t i = 0; i < filament_presets.size(); i++) {
+                    if (i < filament_map.size() && filament_map[i] < 0)
+                        continue; // filament not used on the current plate
+
+                    auto* row_sizer = new wxBoxSizer(wxHORIZONTAL);
+                    auto* chip      = new wxStaticText(this, wxID_ANY, from_u8(filament_presets[i]));
+                    chip->SetBackgroundColour(wxColour(from_u8(filament_colours[i])));
+                    row_sizer->Add(chip, 0, wxALL | wxALIGN_CENTER, FromDIP(2));
+
+                    auto* combo = new wxChoice(this, wxID_ANY);
+                    combo->Append(_L("No mapping"));
+                    for (const auto& cand : m_candidates)
+                        combo->Append(cand.label);
+
+                    // Default keeps the historical behaviour: closest colour match among loaded trays,
+                    // unless the operator remembered a choice from the previous print.
+                    int   best       = 0;
+                    float best_dist  = std::numeric_limits<float>::max();
+                    wxColour filament_c(from_u8(filament_colours[i]));
+                    for (size_t j = 0; j < m_candidates.size(); j++) {
+                        float dist = GUI::calc_color_distance(filament_c, wxColour(m_candidates[j].hex));
+                        if (dist < best_dist) {
+                            best_dist = dist;
+                            best      = static_cast<int>(j + 1);
+                        }
+                    }
+                    if (saved.is_array()) {
+                        for (const auto& e : saved) {
+                            if (e.value("t", -1) != static_cast<int>(i))
+                                continue;
+                            const int c = e.value("canvasId", -1);
+                            const int t = e.value("trayId", -1);
+                            if (c < 0 || t < 0) {
+                                best = 0; // remembered explicit "no mapping"
+                                break;
+                            }
+                            for (size_t j = 0; j < m_candidates.size(); j++) {
+                                if (m_candidates[j].canvas_id == c && m_candidates[j].tray_id == t) {
+                                    best = static_cast<int>(j + 1);
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    combo->SetSelection(best);
+
+                    MappingRow row;
+                    row.filament_idx = static_cast<int>(i);
+                    row.combo        = combo;
+                    m_mapping_rows.push_back(row);
+
+                    row_sizer->Add(combo, 0, wxALL, FromDIP(2));
+                    map_sizer->Add(row_sizer);
+                }
+
+                content_sizer->Add(map_sizer);
+                map_sizer->Show(post_upload_action == PrintHostPostUploadAction::StartPrint);
+            }
+        }
+    }
+
     if (size_t extension_start = recent_path.find_last_of('.'); extension_start != std::string::npos)
         m_valid_suffix = recent_path.substr(extension_start);
     // .gcode suffix control
@@ -1888,9 +1990,46 @@ void ElegooPrintHostSendDialog::EndModal(int ret)
         app_config->set("recent", CONFIG_KEY_TIMELAPSE, std::to_string(m_timeLapse));
         app_config->set("recent", CONFIG_KEY_HEATEDBEDLEVELING, std::to_string(m_heatedBedLeveling));
         app_config->set("recent", CONFIG_KEY_BEDTYPE, std::to_string(static_cast<int>(m_BedType)));
+
+        if (!m_mapping_rows.empty()) {
+            nlohmann::json saved = nlohmann::json::array();
+            for (const auto& row : m_mapping_rows) {
+                const int sel = row.combo->GetSelection();
+                int canvas = -1;
+                int tray   = -1;
+                if (sel > 0 && sel - 1 < static_cast<int>(m_candidates.size())) {
+                    canvas = m_candidates[sel - 1].canvas_id;
+                    tray   = m_candidates[sel - 1].tray_id;
+                }
+                saved.push_back({{"t", row.filament_idx}, {"canvasId", canvas}, {"trayId", tray}});
+            }
+            app_config->set("recent", CONFIG_KEY_SLOTMAP, saved.dump());
+        }
     }
 
     PrintHostSendDialog::EndModal(ret);
+}
+
+std::map<std::string, std::string> ElegooPrintHostSendDialog::extendedInfo() const
+{
+    std::map<std::string, std::string> info = {{"bedType", std::to_string(static_cast<int>(m_BedType))},
+                                               {"timeLapse", std::to_string(m_timeLapse)},
+                                               {"heatedBedLeveling", std::to_string(m_heatedBedLeveling)}};
+
+    // slotMap for the SDCP start-print command, key names mirror the vendor elink serializer:
+    // [{t, canvasId, trayId}] for every filament the operator mapped in the dialog.
+    nlohmann::json mappings = nlohmann::json::array();
+    for (const auto& row : m_mapping_rows) {
+        const int sel = row.combo->GetSelection();
+        if (sel <= 0 || sel - 1 >= static_cast<int>(m_candidates.size()))
+            continue;
+        const auto& cand = m_candidates[sel - 1];
+        mappings.push_back({{"t", row.filament_idx}, {"canvasId", cand.canvas_id}, {"trayId", cand.tray_id}});
+    }
+    if (!mappings.empty())
+        info["slotMap"] = mappings.dump();
+
+    return info;
 }
 
 BedType ElegooPrintHostSendDialog::appBedType() const
