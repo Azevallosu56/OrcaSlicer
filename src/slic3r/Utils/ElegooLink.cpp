@@ -880,7 +880,7 @@ namespace Slic3r {
                 if (checkResult(client, error_fn)) {
                     // send print command
                     std::this_thread::sleep_for(std::chrono::seconds(1));
-                    res = print(client, timeLapse, heatedBedLeveling, bedType, upload_filename, error_fn);
+                    res = print(client, timeLapse, heatedBedLeveling, bedType, upload_data.extended("slotMap"), upload_filename, error_fn);
                 }else{
                     res = false;
                 }
@@ -1096,6 +1096,7 @@ namespace Slic3r {
                            std::string       timeLapse,
                            std::string       heatedBedLeveling,
                            std::string       bedType,
+                           const std::string slot_map,
                            const std::string filename,
                            ErrorFn           error_fn) const
     {
@@ -1119,16 +1120,16 @@ namespace Slic3r {
             auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
             std::string timestamp = std::to_string(milliseconds);     
             std::string jsonString = R"({
-                                        "Id":"",
-                                        "Data":{
-                                            "Cmd":)"+std::to_string(ElegooLinkCommand::ELEGOO_START_PRINT)+R"(,
-                                            "Data":{
-                                                "Filename":"/local/)" + filename + R"(",
-                                                "StartLayer":0,
-                                                "Calibration_switch":)" + heatedBedLeveling + R"(,
-                                                "PrintPlatformType":)" + bedType + R"(,
-                                                "Tlp_Switch":)" + timeLapse + R"(
-                                            },
+                                "Id":"",
+                                "Data":{
+                                    "Cmd":)" + std::to_string(ElegooLinkCommand::ELEGOO_START_PRINT) + R"(,
+                                    "Data":{
+                                        "Filename":"/local/)" + filename + R"(",
+                                        "StartLayer":0,
+                                        "Calibration_switch":)" + heatedBedLeveling + R"(,
+                                        "PrintPlatformType":)" + bedType + R"(,
+                                        "Tlp_Switch":)" + timeLapse + (slot_map.empty() || slot_map == "[]" ? std::string() : std::string(",\"slotMap\":") + slot_map) + R"(
+                                    },
                                             "RequestID":")"+ uuid_string + R"(",
                                             "MainboardID":"",
                                             "TimeStamp":)" + timestamp + R"(,

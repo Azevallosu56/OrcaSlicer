@@ -52,6 +52,7 @@ private:
                std::string       timeLapse,
                std::string       heatedBedLeveling,
                std::string       bedType,
+               const std::string slot_map,
                const std::string filename, ErrorFn error_fn) const;
     bool checkResult(WebSocketClient&  client,
                ErrorFn           error_fn) const;
