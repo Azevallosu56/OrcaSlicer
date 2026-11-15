@@ -29,6 +29,7 @@
 #include "slic3r/GUI/DeviceCore/DevManager.h"
 #include "slic3r/GUI/DeviceCore/DevFilaSystem.h"
 #include "slic3r/GUI/GuiColor.hpp"
+#include "slic3r/GUI/PartPlate.hpp"
 #include <wx/choice.h>
 #include <vector>
 #include <utility>
