@@ -1,4 +1,4 @@
-name: Build Linux AppImage (v2.5.1 Centauri + Qidi)
+name: Build Linux AppImage (v2.5.2 Centauri + Qidi)
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
       - v2.5.0-elegoo-canvas
       - v2.5.0-elegoo-qidi
       - v2.5.1-elegoo-qidi
+      - v2.5.2-elegoo-qidi
 
 permissions:
   actions: write
